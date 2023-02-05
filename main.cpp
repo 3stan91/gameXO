@@ -9,6 +9,7 @@ enum class Status {
     INCORRECT, CORRECT, NOBODY, VANYA, PETYA
 };
 constexpr int sizeOfTable = 3;
+static bool victory = false;
 
 void inputString(string &);
 
@@ -17,8 +18,10 @@ Status gameOver(char table[sizeOfTable][sizeOfTable], char c);
 bool isCorrect(char table[sizeOfTable][sizeOfTable], int);
 
 int main() {
+    //string s[sizeOfTable]{"..X", "OX.", "X.O"};
     //string s[sizeOfTable]{"X..", "OXO", "OOO"};
-    string s[sizeOfTable]{".O.", "XO.", "XOX"};
+    //string s[sizeOfTable]{"XO.", "XO.", "X.OO"};
+    string s[sizeOfTable]{"OX.", "XOX", "X.O"};
     /*  for (int i = 0; i < sizeOfTable; ++i)
           inputString(s[i]);
     */
@@ -32,32 +35,39 @@ int main() {
         cout << "Incorrect\n";
         exit(1);
     }
-    char XO[2] {'X','O'};
-    for(char c:XO) {
+    char XO[2]{'X', 'O'};
+    for (char c: XO) {
         switch (gameOver(table, c)) {
             case Status::CORRECT:
                 cout << "Correct\n";
                 break;
-            case Status::INCORRECT:
+        label:  case Status::INCORRECT:
                 cout << "Incorrect\n";
                 break;
             case Status::NOBODY:
                 cout << "Nobody\n";
                 break;
             case Status::PETYA:
-                cout << "Petya won\n";
-                break;
+                if (isCorrect(table, 3)) {
+                    cout << "Petya won\n";
+                    break;
+                }
+                else
+                    goto label;
             case Status::VANYA:
-                cout << "Vanya won\n";
-                break;
+                if (isCorrect(table, 3)) {
+                    cout << "Vanya won\n";
+                    break;
+                }
+                else
+                    goto label;
         }
     }
     return 0;
 }
 
 Status gameOver(char table[sizeOfTable][sizeOfTable], const char v) {
-    int countDots = 0, countO = 0;
-    int count1 = 0, count2=0, count3=0, count4 =0;
+    int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
 
     for (int row = 0; row < sizeOfTable; row++) {
         for (int col = 0; col < sizeOfTable; col++) {
@@ -68,24 +78,24 @@ Status gameOver(char table[sizeOfTable][sizeOfTable], const char v) {
                 count2++;
             if (table[col][col] == v)
                 count3++;
-            if (table[col][sizeOfTable-1-col] == v)
+            if (table[col][sizeOfTable - 1 - col] == v)
                 count4++;
         }
         if ((count1 == sizeOfTable || count2 == sizeOfTable
-             || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'X')
+             || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'X') {
+            victory = true;
             return Status::PETYA;
-        else if ((count1 == sizeOfTable || count2 == sizeOfTable
-                  || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'O')
+        } else if ((count1 == sizeOfTable || count2 == sizeOfTable
+                    || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'O') {
+            victory = true;
             return Status::VANYA;
-
-        count1=0;
-        count2=0;
-        count3=0;
-        count4=0;
+        }
+        count1 = 0;
+        count2 = 0;
+        count3 = 0;
+        count4 = 0;
     }
-
 }
-
 
 
 void inputString(string &s) {
@@ -101,7 +111,6 @@ void inputString(string &s) {
 bool isCorrect(char table[3][3], int n) {
     bool result = true;
     int countDots = 0, countO = 0, countX = 0;
-    bool nobody = false;
 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
@@ -114,10 +123,11 @@ bool isCorrect(char table[3][3], int n) {
                 ++countO;
             else if (table[i][j] == 'X')
                 ++countX;
-
         }
     }
     if ((countO <= 2 && countX > n) || (countX <= 2 && countO > n))
+        result = false;
+    if ((countX >= n && countO >= n) && victory)
         result = false;
     return result;
 }
