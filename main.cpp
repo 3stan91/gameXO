@@ -12,12 +12,13 @@ constexpr int sizeOfTable = 3;
 
 void inputString(string &);
 
-Status testInput(char table[][sizeOfTable], int);
+Status gameOver(char table[sizeOfTable][sizeOfTable]);
 
-bool checking(char table[][sizeOfTable], int);
+bool isCorrect(char table[sizeOfTable][sizeOfTable], int);
 
 int main() {
-    string s[sizeOfTable]{"X..", "OXO", "OOO"};
+    //string s[sizeOfTable]{"X..", "OXO", "OOO"};
+    string s[sizeOfTable]{"XO.", "XO.", "X.O"};
     /*  for (int i = 0; i < sizeOfTable; ++i)
           inputString(s[i]);
     */
@@ -27,12 +28,12 @@ int main() {
         for (int j = 0; j < sizeOfTable; ++j)
             table[i][j] = s[i][j];
 
-    if (!checking(table, sizeOfTable)) {
+    if (!isCorrect(table, sizeOfTable)) {
         cout << "Incorrect\n";
         exit(1);
     }
 
-    switch (testInput(table, sizeOfTable)) {
+    switch (gameOver(table)) {
         case Status::CORRECT:
             cout << "Correct\n";
             break;
@@ -52,62 +53,38 @@ int main() {
     return 0;
 }
 
-Status testInput(char table[][3], int sizeOfTable) {
-    int countDots = 0, countO = 0, countX = 0;
-    bool nobody = false;
-    char mas[3];
-     for (int i = 0; i < sizeOfTable; ++i) {
-         for (int j = 0; j < sizeOfTable; ++j) {
-             if (table[i][j] == '.')
-                 ++countDots;
-             if (table[i][j] == 'O')
-                 ++countO;
-             if (table[i][j] == 'X')
-                 ++countX;
-         }
+Status gameOver(char table[sizeOfTable][sizeOfTable]) {
+    int countDots = 0, countO = 0;
+    int countX1 = 0, countX2=0, countX3=0, countX4 =0;
 
-         if (countX < countO || countO < countX)
-             nobody = true;
-
-         if ((countO<=2 && countX > sizeOfTable) || (countX <=2 && countO > sizeOfTable))
-             return Status::INCORRECT;
-         if (nobody)
-             return Status::NOBODY;
-
-         if (countO <= countDots && countX <= countDots)
-             return Status::NOBODY;
-     }
-
-    int testDialonal = 0;
-    while (testDialonal < 2) {
-        if (testDialonal == 0) {
-            for (int i = 0; i < sizeOfTable; ++i) {
-                mas[i] = table[i][i];
-            }
-        } else
-            for (int i = 0; i < sizeOfTable; ++i) {
-                mas[i] = table[i][sizeOfTable - i - 1];
-            }
-        for (const char c: mas) {
-            switch (c) {
-                case 'X':
-                    countX++;
-                    break;
-                case 'O':
-                    countO++;
-                    break;
-            }
+    for (int row = 0; row < sizeOfTable; row++) {
+        for (int col = 0; col < sizeOfTable; col++) {
+            if (table[row][col] == 'X')
+                countX1++;
+            if (table[col][row] == 'X')
+                countX2++;
+            if (table[col][col] == 'X')
+                countX3++;
+            if (table[col][sizeOfTable-1-col] == 'X')
+                countX3++;
         }
-
-        if (countO == sizeOfTable)
-            return Status::VANYA;
-        else if (countX == sizeOfTable)
+        if (countX1 == sizeOfTable  || countX2 == sizeOfTable
+                || countX3 == sizeOfTable || countX4 == sizeOfTable)
             return Status::PETYA;
-        testDialonal++;
-        countX = countO = 0;
+
+        countX1=0;
+        countX2=0;
+        countX3=0;
+        countX4=0;
     }
 
+}
+
+/*
     for (int i = 0; i < sizeOfTable; ++i) {
+        for (int j = 0; j < ; ++j) {
+
+        }
         if ((table[i][0] == table[i][1] == table[i][2] == 'X') ||
             (table[0][i] == table[1][i] == table[2][i] == 'X'))
             return Status::PETYA;
@@ -118,7 +95,7 @@ Status testInput(char table[][3], int sizeOfTable) {
             return Status::NOBODY;
     }
 }
-
+*/
 
 void inputString(string &s) {
     static int numberString = 0;
@@ -130,14 +107,26 @@ void inputString(string &s) {
     }
 }
 
-bool checking(char table[][3], int n) {
+bool isCorrect(char table[3][3], int n) {
     bool result = true;
-    for (int i = 0; i < n; ++i)
-        for (int j = 0; j < n; ++j)
+    int countDots = 0, countO = 0, countX = 0;
+    bool nobody = false;
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
             if (table[i][j] != 'X' && table[i][j] != 'O' && table[i][j] != '.') {
                 result = false;
                 break;
-            } else
-                continue;
+            } else if (table[i][j] == '.')
+                ++countDots;
+            else if (table[i][j] == 'O')
+                ++countO;
+            else if (table[i][j] == 'X')
+                ++countX;
+
+        }
+    }
+    if ((countO <= 2 && countX > n) || (countX <= 2 && countO > n))
+        result = false;
     return result;
 }
