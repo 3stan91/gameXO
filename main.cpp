@@ -69,7 +69,7 @@ Status testInput(char table[][3], int sizeOfTable) {
          if (countX < countO || countO < countX)
              nobody = true;
 
-         if ((countX > countO && countX > sizeOfTable) || (countX < countO && countO > sizeOfTable))
+         if ((countO<=2 && countX > sizeOfTable) || (countX <=2 && countO > sizeOfTable))
              return Status::INCORRECT;
          if (nobody)
              return Status::NOBODY;
