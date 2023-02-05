@@ -12,13 +12,13 @@ constexpr int sizeOfTable = 3;
 
 void inputString(string &);
 
-Status gameOver(char table[sizeOfTable][sizeOfTable]);
+Status gameOver(char table[sizeOfTable][sizeOfTable], char c);
 
 bool isCorrect(char table[sizeOfTable][sizeOfTable], int);
 
 int main() {
     //string s[sizeOfTable]{"X..", "OXO", "OOO"};
-    string s[sizeOfTable]{"XO.", "XO.", "X.O"};
+    string s[sizeOfTable]{".O.", "XO.", "XOX"};
     /*  for (int i = 0; i < sizeOfTable; ++i)
           inputString(s[i]);
     */
@@ -32,70 +32,61 @@ int main() {
         cout << "Incorrect\n";
         exit(1);
     }
-
-    switch (gameOver(table)) {
-        case Status::CORRECT:
-            cout << "Correct\n";
-            break;
-        case Status::INCORRECT:
-            cout << "Incorrect\n";
-            break;
-        case Status::NOBODY:
-            cout << "Nobody\n";
-            break;
-        case Status::PETYA:
-            cout << "Petya won\n";
-            break;
-        case Status::VANYA:
-            cout << "Vanya won\n";
-            break;
+    char XO[2] {'X','O'};
+    for(char c:XO) {
+        switch (gameOver(table, c)) {
+            case Status::CORRECT:
+                cout << "Correct\n";
+                break;
+            case Status::INCORRECT:
+                cout << "Incorrect\n";
+                break;
+            case Status::NOBODY:
+                cout << "Nobody\n";
+                break;
+            case Status::PETYA:
+                cout << "Petya won\n";
+                break;
+            case Status::VANYA:
+                cout << "Vanya won\n";
+                break;
+        }
     }
     return 0;
 }
 
-Status gameOver(char table[sizeOfTable][sizeOfTable]) {
+Status gameOver(char table[sizeOfTable][sizeOfTable], const char v) {
     int countDots = 0, countO = 0;
-    int countX1 = 0, countX2=0, countX3=0, countX4 =0;
+    int count1 = 0, count2=0, count3=0, count4 =0;
 
     for (int row = 0; row < sizeOfTable; row++) {
         for (int col = 0; col < sizeOfTable; col++) {
-            if (table[row][col] == 'X')
-                countX1++;
-            if (table[col][row] == 'X')
-                countX2++;
-            if (table[col][col] == 'X')
-                countX3++;
-            if (table[col][sizeOfTable-1-col] == 'X')
-                countX3++;
+
+            if (table[row][col] == v)
+                count1++;
+            if (table[col][row] == v)
+                count2++;
+            if (table[col][col] == v)
+                count3++;
+            if (table[col][sizeOfTable-1-col] == v)
+                count4++;
         }
-        if (countX1 == sizeOfTable  || countX2 == sizeOfTable
-                || countX3 == sizeOfTable || countX4 == sizeOfTable)
+        if ((count1 == sizeOfTable || count2 == sizeOfTable
+             || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'X')
             return Status::PETYA;
-
-        countX1=0;
-        countX2=0;
-        countX3=0;
-        countX4=0;
-    }
-
-}
-
-/*
-    for (int i = 0; i < sizeOfTable; ++i) {
-        for (int j = 0; j < ; ++j) {
-
-        }
-        if ((table[i][0] == table[i][1] == table[i][2] == 'X') ||
-            (table[0][i] == table[1][i] == table[2][i] == 'X'))
-            return Status::PETYA;
-        else if ((table[i][0] == table[i][1] == table[i][2] == 'O') ||
-                 (table[0][i] == table[1][i] == table[2][i] == 'O'))
+        else if ((count1 == sizeOfTable || count2 == sizeOfTable
+                  || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'O')
             return Status::VANYA;
-        else
-            return Status::NOBODY;
+
+        count1=0;
+        count2=0;
+        count3=0;
+        count4=0;
     }
+
 }
-*/
+
+
 
 void inputString(string &s) {
     static int numberString = 0;
