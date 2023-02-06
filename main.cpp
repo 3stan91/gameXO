@@ -22,7 +22,7 @@ int main() {
     //string s[sizeOfTable]{"X..", "OXO", "OOO"};
     //string s[sizeOfTable]{"XO.", "XO.", "X.OO"};
     //string s[sizeOfTable]{"OX.", "XOX", "X.O"};
-    string s[sizeOfTable]{"X..", ".X.", "OO."};
+    string s[sizeOfTable]{"XXO", "OOX", "XOX"};
     /*  for (int i = 0; i < sizeOfTable; ++i)
           inputString(s[i]);
     */
@@ -37,27 +37,29 @@ int main() {
         exit(1);
     }
     char XO[2]{'X', 'O'};
-    for (char c: XO) {
-        switch (foundWinner(table, c)) {
-        label:  case Status::INCORRECT:
+    int i = 0;
+    bool isResult = false;
+    while (!isResult || i++ < 2) {
+        switch (foundWinner(table, XO[i])) {
+            label:
+            case Status::INCORRECT:
                 cout << "Incorrect\n";
                 break;
             case Status::NOBODY:
                 cout << "Nobody\n";
+                isResult = true;
                 break;
             case Status::PETYA:
                 if (isCorrect(table, 3)) {
                     cout << "Petya won\n";
                     break;
-                }
-                else
+                } else
                     goto label;
             case Status::VANYA:
-                if (isCorrect(table,3)) {
+                if (isCorrect(table, 3)) {
                     cout << "Vanya won\n";
                     break;
-                }
-                else
+                } else
                     goto label;
         }
     }
@@ -80,16 +82,14 @@ Status foundWinner(char table[sizeOfTable][sizeOfTable], const char v) {
                 count4++;
         }
         if ((count1 == sizeOfTable || count2 == sizeOfTable
-                || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'X') {
+             || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'X') {
             victory = true;
             return Status::PETYA;
-        }
-        else if ((count1 == sizeOfTable || count2 == sizeOfTable
-                || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'O') {
+        } else if ((count1 == sizeOfTable || count2 == sizeOfTable
+                    || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'O') {
             victory = true;
             return Status::VANYA;
-        }
-        else if(count1<=2 || count2<=2 || count3<=2 || count4<=2)
+        } else if (count1 <= 2 || count2 <= 2 || count3 <= 2 || count4 <= 2)
             return Status::NOBODY;
 
         count1 = 0;
