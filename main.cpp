@@ -13,7 +13,7 @@ static bool victory = false;
 
 void inputString(string &);
 
-Status foundWinner(char table[sizeOfTable][sizeOfTable], char c);
+Status foundWinner(char table[sizeOfTable][sizeOfTable], const char v = 'X');
 
 bool isCorrect(char table[sizeOfTable][sizeOfTable], int);
 
@@ -22,10 +22,11 @@ int main() {
     //string s[sizeOfTable]{"X..", "OXO", "OOO"};
     //string s[sizeOfTable]{"XO.", "XO.", "X.OO"};
     //string s[sizeOfTable]{"OX.", "XOX", "X.O"};
-    string s[sizeOfTable]{"XXO", "OOX", "XOX"};
-    /*  for (int i = 0; i < sizeOfTable; ++i)
-          inputString(s[i]);
-    */
+    //string s[sizeOfTable]{"XXO", "OOX", "XOX"};
+    string s[3];
+    for (int i = 0; i < sizeOfTable; ++i)
+        inputString(s[i]);
+
     char table[sizeOfTable][sizeOfTable];
 
     for (int i = 0; i < sizeOfTable; ++i)
@@ -37,13 +38,14 @@ int main() {
         exit(1);
     }
     char XO[2]{'X', 'O'};
-    int i = 0;
+    int i = -1;
     bool isResult = false;
-    while (!isResult || i++ < 2) {
+    while (!isResult && i++ < 2) {
         switch (foundWinner(table, XO[i])) {
             label:
             case Status::INCORRECT:
                 cout << "Incorrect\n";
+                isResult = true;
                 break;
             case Status::NOBODY:
                 cout << "Nobody\n";
@@ -52,12 +54,14 @@ int main() {
             case Status::PETYA:
                 if (isCorrect(table, 3)) {
                     cout << "Petya won\n";
+                    isResult = true;
                     break;
                 } else
                     goto label;
             case Status::VANYA:
                 if (isCorrect(table, 3)) {
                     cout << "Vanya won\n";
+                    isResult = true;
                     break;
                 } else
                     goto label;
@@ -68,7 +72,7 @@ int main() {
 
 Status foundWinner(char table[sizeOfTable][sizeOfTable], const char v) {
     int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
-
+    Status result;
     for (int row = 0; row < sizeOfTable; row++) {
         for (int col = 0; col < sizeOfTable; col++) {
 
@@ -84,19 +88,25 @@ Status foundWinner(char table[sizeOfTable][sizeOfTable], const char v) {
         if ((count1 == sizeOfTable || count2 == sizeOfTable
              || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'X') {
             victory = true;
-            return Status::PETYA;
-        } else if ((count1 == sizeOfTable || count2 == sizeOfTable
+            result = Status::PETYA;
+            break;
+        }
+        else if ((count1 == sizeOfTable || count2 == sizeOfTable
                     || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'O') {
-            victory = true;
-            return Status::VANYA;
-        } else if (count1 <= 2 || count2 <= 2 || count3 <= 2 || count4 <= 2)
-            return Status::NOBODY;
-
+                victory = true;
+                result = Status::VANYA;
+                break;
+        }
+        else if (count1 <= 2 || count2 <= 2 || count3 <= 2 || count4 <= 2){
+            result = Status::NOBODY;
+            break;
+        }
         count1 = 0;
         count2 = 0;
         count3 = 0;
         count4 = 0;
     }
+    return result;
 }
 
 
