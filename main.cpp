@@ -13,20 +13,23 @@ static bool victory = false;
 
 void inputString(string &);
 
-Status foundWinner(char table[sizeOfTable][sizeOfTable], const char v = 'X');
+Status foundWinner(char table[sizeOfTable][sizeOfTable], const char symbol = 'X');
 
 bool isCorrect(char table[sizeOfTable][sizeOfTable], int);
 
 int main() {
-    //string s[sizeOfTable]{"..X", "OX.", "X.O"};
     //string s[sizeOfTable]{"X..", "OXO", "OOO"};
+    //string s[sizeOfTable]{"X..", ".X.", "OO."};
+    string s[sizeOfTable]{"XXO", "OOX", "XOX"};
     //string s[sizeOfTable]{"XO.", "XO.", "X.OO"};
     //string s[sizeOfTable]{"OX.", "XOX", "X.O"};
-    //string s[sizeOfTable]{"XXO", "OOX", "XOX"};
+
+    //string s[sizeOfTable]{"..X", "OX.", "X.O"};
+    /*
     string s[3];
     for (int i = 0; i < sizeOfTable; ++i)
         inputString(s[i]);
-
+    */
     char table[sizeOfTable][sizeOfTable];
 
     for (int i = 0; i < sizeOfTable; ++i)
@@ -39,29 +42,29 @@ int main() {
     }
     char XO[2]{'X', 'O'};
     int i = -1;
-    bool isResult = false;
-    while (!isResult && i++ < 2) {
+    bool detectedWinner = false;
+    while (!detectedWinner && ++i < 2) {
         switch (foundWinner(table, XO[i])) {
             label:
             case Status::INCORRECT:
                 cout << "Incorrect\n";
-                isResult = true;
+                detectedWinner = true;
                 break;
             case Status::NOBODY:
                 cout << "Nobody\n";
-                isResult = true;
+                detectedWinner = true;
                 break;
             case Status::PETYA:
                 if (isCorrect(table, 3)) {
                     cout << "Petya won\n";
-                    isResult = true;
+                    detectedWinner = true;
                     break;
                 } else
                     goto label;
             case Status::VANYA:
                 if (isCorrect(table, 3)) {
                     cout << "Vanya won\n";
-                    isResult = true;
+                    detectedWinner = true;
                     break;
                 } else
                     goto label;
@@ -70,45 +73,44 @@ int main() {
     return 0;
 }
 
-Status foundWinner(char table[sizeOfTable][sizeOfTable], const char v) {
-    int count1 = 0, count2 = 0, count3 = 0, count4 = 0;
-    Status result;
+Status foundWinner(char table[sizeOfTable][sizeOfTable], const char symbol) {
+    int counterColumn = 0, counterRow = 0, counter1Diagonal = 0, counter2Diagonal = 0;
+    Status winner;
     for (int row = 0; row < sizeOfTable; row++) {
-        for (int col = 0; col < sizeOfTable; col++) {
+        for (int column = 0; column < sizeOfTable; column++) {
 
-            if (table[row][col] == v)
-                count1++;
-            if (table[col][row] == v)
-                count2++;
-            if (table[col][col] == v)
-                count3++;
-            if (table[col][sizeOfTable - 1 - col] == v)
-                count4++;
+            if (table[row][column] == symbol)
+                counterColumn++;
+            if (table[column][row] == symbol)
+                counterRow++;
+            if (table[column][column] == symbol)
+                counter1Diagonal++;
+            if (table[column][sizeOfTable - 1 - column] == symbol)
+                counter2Diagonal++;
         }
-        if ((count1 == sizeOfTable || count2 == sizeOfTable
-             || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'X') {
+        if ((counterColumn == sizeOfTable || counterRow == sizeOfTable
+             || counter1Diagonal == sizeOfTable || counter2Diagonal == sizeOfTable) && symbol == 'X') {
             victory = true;
-            result = Status::PETYA;
+            winner = Status::PETYA;
             break;
         }
-        else if ((count1 == sizeOfTable || count2 == sizeOfTable
-                    || count3 == sizeOfTable || count4 == sizeOfTable) && v == 'O') {
+        else if ((counterColumn == sizeOfTable || counterRow == sizeOfTable
+                  || counter1Diagonal == sizeOfTable || counter2Diagonal == sizeOfTable) && symbol == 'O') {
                 victory = true;
-                result = Status::VANYA;
+            winner = Status::VANYA;
                 break;
         }
-        else if (count1 <= 2 || count2 <= 2 || count3 <= 2 || count4 <= 2){
-            result = Status::NOBODY;
+        else if (counterColumn <= 2 || counterRow <= 2 || counter1Diagonal <= 2 || counter2Diagonal <= 2){
+            winner = Status::NOBODY;
             break;
         }
-        count1 = 0;
-        count2 = 0;
-        count3 = 0;
-        count4 = 0;
+        counterColumn = 0;
+        counterRow = 0;
+        counter1Diagonal = 0;
+        counter2Diagonal = 0;
     }
-    return result;
+    return winner;
 }
-
 
 void inputString(string &s) {
     static int numberString = 0;
@@ -120,14 +122,14 @@ void inputString(string &s) {
     }
 }
 
-bool isCorrect(char table[3][3], int n) {
-    bool result = true;
+bool isCorrect(char table[sizeOfTable][sizeOfTable], int size) {
+    bool correct = true;
     int countDots = 0, countO = 0, countX = 0;
 
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
+    for (int i = 0; i < size; ++i) {
+        for (int j = 0; j < size; ++j) {
             if (table[i][j] != 'X' && table[i][j] != 'O' && table[i][j] != '.') {
-                result = false;
+                correct = false;
                 break;
             } else if (table[i][j] == '.')
                 ++countDots;
@@ -138,9 +140,9 @@ bool isCorrect(char table[3][3], int n) {
         }
     }
 
-    if ((countO <= 2 && countX > n) || (countX <= 2 && countO > n))
-        result = false;
-    if ((countX >= n && countO >= n) && victory)
-        result = false;
-    return result;
+    if ((countO <= 2 && countX > size) || (countX <= 2 && countO > size))
+        correct = false;
+    if ((countX >= size && countO >= size) && victory)
+        correct = false;
+    return correct;
 }
