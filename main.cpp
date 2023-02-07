@@ -28,7 +28,7 @@ int main() {
     int i = -1;
     bool detectedWinner = false;
     while (!detectedWinner && ++i < 2) {
-        switch (foundWinner(table, XO[i])) {
+        switch (foundWinner(table, XO, i)) {
             label:
             case Status::INCORRECT:
                 cout << "Incorrect\n";
@@ -57,33 +57,36 @@ int main() {
     return 0;
 }
 
-Status foundWinner(char table[sizeOfTable][sizeOfTable], const char symbol) {
+Status foundWinner(char table[sizeOfTable][sizeOfTable], const char symbols[sizeOfTable - 1], int index) {
     int counterColumn = 0, counterRow = 0, counter1Diagonal = 0, counter2Diagonal = 0;
     Status winner;
+    int i=0;
+
     for (int row = 0; row < sizeOfTable; row++) {
         for (int column = 0; column < sizeOfTable; column++) {
 
-            if (table[row][column] == symbol)
+            if (table[row][column] == symbols[index])
                 counterColumn++;
-            if (table[column][row] == symbol)
+            if (table[column][row] == symbols[index])
                 counterRow++;
-            if (table[column][column] == symbol)
+            if (table[column][column] == symbols[index])
                 counter1Diagonal++;
-            if (table[column][sizeOfTable - 1 - column] == symbol)
+            if (table[column][sizeOfTable - 1 - column] == symbols[index])
                 counter2Diagonal++;
         }
 
         if ((counterColumn == sizeOfTable || counterRow == sizeOfTable
-             || counter1Diagonal == sizeOfTable || counter2Diagonal == sizeOfTable) && symbol == 'X') {
+             || counter1Diagonal == sizeOfTable || counter2Diagonal == sizeOfTable) && symbols[index] == 'X') {
             victory = true;
             winner = Status::PETYA;
             break;
         } else if ((counterColumn == sizeOfTable || counterRow == sizeOfTable
-                    || counter1Diagonal == sizeOfTable || counter2Diagonal == sizeOfTable) && symbol == 'O') {
+                    || counter1Diagonal == sizeOfTable || counter2Diagonal == sizeOfTable) && symbols[index] == 'O') {
             victory = true;
             winner = Status::VANYA;
             break;
-        } else if (counterColumn <= 2 || counterRow <= 2 || counter1Diagonal <= 2 || counter2Diagonal <= 2) {
+        } else if ((counterColumn <= 2 || counterRow <= 2
+                    || counter1Diagonal <= 2 || counter2Diagonal <= 2) && (i == sizeof(symbols)/sizeof(symbols[0])-1)) {
             winner = Status::NOBODY;
             break;
         }
@@ -147,13 +150,13 @@ bool isCorrectInputUser(char table[sizeOfTable][sizeOfTable]) {
     return true;
 }
 
-bool isCorrectCondition(char table[sizeOfTable][sizeOfTable]){
+bool isCorrectCondition(char table[sizeOfTable][sizeOfTable]) {
     int countO = 0, countX = 0;
     bool correctCondition = true;
 
-    if (sumSymbolsXO(table, countO, countX) && victory)
+    if (victory && sumSymbolsXO(table, countO, countX))
         correctCondition = false;
     if ((countO <= 2 && countX > sizeOfTable) || (countX <= 2 && countO > sizeOfTable))
         correctCondition = false;
-return correctCondition;
+    return correctCondition;
 }
