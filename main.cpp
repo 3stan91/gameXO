@@ -1,29 +1,13 @@
 #include <iostream>
 #include <string>
-
-using std::cin;
-using std::cout;
-using std::string;
-
-enum class Status {
-    INCORRECT, NOBODY, VANYA, PETYA
-};
-constexpr int sizeOfTable = 3;
-static bool victory = false;
-
-void inputString(string &);
-
-Status foundWinner(char table[sizeOfTable][sizeOfTable], const char symbol = 'X');
-
-bool isCorrect(char table[sizeOfTable][sizeOfTable], int);
+#include "gameXO_Head.h"
 
 int main() {
     //string s[sizeOfTable]{"X..", "OXO", "OOO"};
     //string s[sizeOfTable]{"X..", ".X.", "OO."};
-    string s[sizeOfTable]{"XXO", "OOX", "XOX"};
-    //string s[sizeOfTable]{"XO.", "XO.", "X.OO"};
-    //string s[sizeOfTable]{"OX.", "XOX", "X.O"};
-
+    //string s[sizeOfTable]{"XXO", "OOX", "XOX"};
+    //string s[sizeOfTable]{"XO.", "XO.", "X.O"};
+    string s[sizeOfTable]{"OX.", "XOX", "X.O"};  //?
     //string s[sizeOfTable]{"..X", "OX.", "X.O"};
     /*
     string s[3];
@@ -36,7 +20,7 @@ int main() {
         for (int j = 0; j < sizeOfTable; ++j)
             table[i][j] = s[i][j];
 
-    if (!isCorrect(table, sizeOfTable)) {
+    if (!isCorrectInputUser(table)) {
         cout << "Incorrect\n";
         exit(1);
     }
@@ -55,14 +39,14 @@ int main() {
                 detectedWinner = true;
                 break;
             case Status::PETYA:
-                if (isCorrect(table, 3)) {
+                if (isCorrectCondition(table)) {
                     cout << "Petya won\n";
                     detectedWinner = true;
                     break;
                 } else
                     goto label;
             case Status::VANYA:
-                if (isCorrect(table, 3)) {
+                if (isCorrectCondition(table)) {
                     cout << "Vanya won\n";
                     detectedWinner = true;
                     break;
@@ -88,19 +72,18 @@ Status foundWinner(char table[sizeOfTable][sizeOfTable], const char symbol) {
             if (table[column][sizeOfTable - 1 - column] == symbol)
                 counter2Diagonal++;
         }
+
         if ((counterColumn == sizeOfTable || counterRow == sizeOfTable
              || counter1Diagonal == sizeOfTable || counter2Diagonal == sizeOfTable) && symbol == 'X') {
             victory = true;
             winner = Status::PETYA;
             break;
-        }
-        else if ((counterColumn == sizeOfTable || counterRow == sizeOfTable
-                  || counter1Diagonal == sizeOfTable || counter2Diagonal == sizeOfTable) && symbol == 'O') {
-                victory = true;
+        } else if ((counterColumn == sizeOfTable || counterRow == sizeOfTable
+                    || counter1Diagonal == sizeOfTable || counter2Diagonal == sizeOfTable) && symbol == 'O') {
+            victory = true;
             winner = Status::VANYA;
-                break;
-        }
-        else if (counterColumn <= 2 || counterRow <= 2 || counter1Diagonal <= 2 || counter2Diagonal <= 2){
+            break;
+        } else if (counterColumn <= 2 || counterRow <= 2 || counter1Diagonal <= 2 || counter2Diagonal <= 2) {
             winner = Status::NOBODY;
             break;
         }
@@ -122,27 +105,55 @@ void inputString(string &s) {
     }
 }
 
-bool isCorrect(char table[sizeOfTable][sizeOfTable], int size) {
-    bool correct = true;
-    int countDots = 0, countO = 0, countX = 0;
-
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
-            if (table[i][j] != 'X' && table[i][j] != 'O' && table[i][j] != '.') {
-                correct = false;
-                break;
-            } else if (table[i][j] == '.')
-                ++countDots;
-            else if (table[i][j] == 'O')
+bool sumSymbolsXO(char table[sizeOfTable][sizeOfTable], int &countX, int &countO) {
+    bool more3Symbols = false;
+    for (int i = 0; i < sizeOfTable; ++i) {
+        for (int j = 0; j < sizeOfTable; ++j) {
+            if (table[i][j] == 'O')
                 ++countO;
             else if (table[i][j] == 'X')
                 ++countX;
         }
     }
+    if (countX >= sizeOfTable || countO >= sizeOfTable)
+        more3Symbols = true;
+    return more3Symbols;
+}
 
-    if ((countO <= 2 && countX > size) || (countX <= 2 && countO > size))
-        correct = false;
-    if ((countX >= size && countO >= size) && victory)
-        correct = false;
-    return correct;
+bool isCorrectInputUser(char table[sizeOfTable][sizeOfTable]) {
+    for (int i = 0; i < sizeOfTable; ++i) {
+        for (int j = 0; j < sizeOfTable; ++j) {
+            if (table[i][j] != 'X' && table[i][j] != 'O' && table[i][j] != '.') {
+                return false;
+            }
+        }
+    }
+    /* for (int i = 0; i < size; ++i) {
+         for (int j = 0; j < size; ++j) {
+             if (table[i][j] != 'X' && table[i][j] != 'O' && table[i][j] != '.') {
+                 correct = false;
+                 break;
+             } else if (table[i][j] == '.')
+                 ++countDots;
+             else if (table[i][j] == 'O')
+                 ++countO;
+             else if (table[i][j] == 'X')
+                 ++countX;
+         }
+       //  if (countX >= size || countO >= size) //&& victory)
+         //    correct = false;
+     }
+     */
+    return true;
+}
+
+bool isCorrectCondition(char table[sizeOfTable][sizeOfTable]){
+    int countO = 0, countX = 0;
+    bool correctCondition = true;
+
+    if (sumSymbolsXO(table, countO, countX) && victory)
+        correctCondition = false;
+    if ((countO <= 2 && countX > sizeOfTable) || (countX <= 2 && countO > sizeOfTable))
+        correctCondition = false;
+return correctCondition;
 }
