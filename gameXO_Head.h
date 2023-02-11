@@ -8,11 +8,16 @@ using std::string;
 enum class Status {
     INCORRECT, NOBODY, VANYA, PETYA, UNKNOWN
 };
+bool victory = false;
 constexpr int sizeOfTable = 3;
+
 void inputString(string &s);
-Status searchWinner(char table[sizeOfTable][sizeOfTable], const char c, int i);
+
+Status searchWinner(char table[sizeOfTable][sizeOfTable], const char c, int i, bool);
+
 bool isCorrectInputUser(char table[sizeOfTable][sizeOfTable]);
+
 //bool foundWinner(int &countX, int &countO, Status &status);
-bool isCorrectCondition(char table[sizeOfTable][sizeOfTable], const char c);
+Status isCorrectCondition(char table[sizeOfTable][sizeOfTable], const char c);
 //bool sumSymbolsXO(char table[sizeOfTable][sizeOfTable], int &countX, int &countO);
 #endif
