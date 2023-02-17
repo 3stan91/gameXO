@@ -3,17 +3,11 @@
 #include "gameXO_Head.h"
 
 int main() {
-    /*string s[sizeOfTable]{"X..", "OXO", "OOO"};
-    //string s[sizeOfTable]{"X..", ".X.", "OO."}; +
-    //string s[sizeOfTable]{"XXO", "OOX", "XOX"}; +
-    //string s[sizeOfTable]{"XO.", "XO.", "X.O"};  +
 
-    //string s[sizeOfTable]{"..X", "OX.", "X.O"};
     string s[3];
     for (int i = 0; i < sizeOfTable; ++i)
         inputString(s[i]);
-    */
-    string s[sizeOfTable]{"X..", "OXO", "OOO"};
+
     char table[sizeOfTable][sizeOfTable];
 
     for (int i = 0; i < sizeOfTable; ++i)
@@ -25,149 +19,144 @@ int main() {
         exit(-1);
     }
 
-    int i = 0;
-    char XO[]{'X', 'O'};
+    char winner;
     bool detectedWinner = false;
-    while (!detectedWinner && i < 2) {   //|| symbol < 2) {
-        // cout << XO[symbol];
-        // if(symbol<2)
-        switch (searchWinner(table, XO[i], i, false)) {
-            //  incorrect:
-            case Status::INCORRECT:
-                cout << "Incorrect\n";
-                detectedWinner = true;
-                break;
-            case Status::NOBODY:
-                cout << "Nobody\n";
-                detectedWinner = true;
-                break;
-            case Status::PETYA:
-                // if (isCorrectCondition(table, 'O')) {
-                cout << "Petya won\n";
-                detectedWinner = true;
-                break;
-                //}
-                //  else                        goto incorrect;
-            case Status::VANYA:
-                // if (isCorrectCondition(table, 'X')) {
-                cout << "Vanya won\n";
-                detectedWinner = true;
-                break;
-                // }
-                //  else                        goto incorrect;
+    while (!detectedWinner) {
+        if (searchWinner(table, winner)) {
+
+            switch (isCorrectCondition(table, winner)) {
+                case Status::INCORRECT:
+                    cout << "Incorrect\n";
+                    detectedWinner = true;
+                    break;
+                case Status::NOBODY:
+                    cout << "Nobody\n";
+                    detectedWinner = true;
+                    break;
+                case Status::PETYA:
+                    // if (isCorrectCondition(table, 'O')) {
+                    cout << "Petya won\n";
+                    detectedWinner = true;
+                    break;
+                    //}
+                    //  else                        goto incorrect;
+                case Status::VANYA:
+                    // if (isCorrectCondition(table, 'X')) {
+                    cout << "Vanya won\n";
+                    detectedWinner = true;
+                    break;
+                    // }
+                    //  else                        goto incorrect;
+            }
+        } else {
+            cout << "Nobody\n";
+            return 0;
         }
-        i++;
     }
     return 0;
 }
 
-Status searchWinner(char table[sizeOfTable][sizeOfTable], const char c, int index, bool victory) {
-    int counter = 0; //, counterRow = 0, counter1Diagonal = 0, counter2Diagonal = 0;
-    Status winner = Status::NOBODY;
+bool searchWinner(char table[sizeOfTable][sizeOfTable], char &won) {
+    int counter = 0, i = 0;
+    char XO[2]{'X', 'O'};
+    bool victory = false;
+    do {
+        for (int row = 0; !victory && row < sizeOfTable; row++) {
+            for (int column = 0; column < sizeOfTable; column++) {
+                if (table[row][column] == XO[i])
+                    counter++;
+            }
 
-    for (int row = 0; row < sizeOfTable; row++) {
-        for (int column = 0; column < sizeOfTable; column++) {
-            if (table[row][column] == c)
-                counter++;
+            if (counter == sizeOfTable && (XO[i] == 'X' || XO[i] == 'O')) {
+                victory = true;
+                won = XO[i];
+                break;
+            }
+            counter = 0;
         }
-        if (isCorrectCondition(table, c) == Status::INCORRECT)
-            return Status::INCORRECT;
 
-        if (counter == sizeOfTable && c == 'X') {
-            victory = true;
-            return Status::PETYA;
-        }
-        if (counter == sizeOfTable && c == 'O') {
-            victory = true;
-            return Status::VANYA;
-        }
-    }
-
-    for (int row = 0; row < sizeOfTable; row++) {
-        for (int column = 0; column < sizeOfTable; column++) {
-            if (table[column][row] == c)
-                counter++;
-        }
-        if (isCorrectCondition(table, c) == Status::INCORRECT)
-            return Status::INCORRECT;
-        if (counter == sizeOfTable && c == 'X') {
-            victory = true;
-            return Status::PETYA;
-        }
-        if (counter == sizeOfTable && c == 'O') {
-            victory = true;
-            return Status::VANYA;
+        for (int row = 0; !victory && row < sizeOfTable; row++) {
+            for (int column = 0; column < sizeOfTable; column++) {
+                if (table[column][row] == XO[i])
+                    counter++;
+            }
+            if (counter == sizeOfTable && (XO[i] == 'X' || XO[i] == 'O')) {
+                victory = true;
+                won = XO[i];
+                break;
+            }
+            counter = 0;
         }
 
         for (int column = 0; column < sizeOfTable; column++) {
-            if (table[column][column] == c)
+            if (table[column][column] == XO[i])
                 counter++;
-            if (table[column][sizeOfTable - 1 - column] == c)
-                counter++;
-            if (isCorrectCondition(table, c) == Status::INCORRECT)
-                return Status::INCORRECT;
-            if (counter == sizeOfTable && c == 'X')
-                return Status::PETYA;
-            if (counter == sizeOfTable && c == 'O')
-                return Status::VANYA;
         }
+        if (counter == sizeOfTable && (XO[i] == 'X' || XO[i] == 'O')) {
+            victory = true;
+            won = XO[i];
+        } else
+            counter = 0;
+
+        for (int column = 0; column < sizeOfTable; column++) {
+            if (table[column][sizeOfTable - 1 - column] == XO[i])
+                counter++;
+        }
+        if (counter == sizeOfTable && (XO[i] == 'X' || XO[i] == 'O')) {
+            victory = true;
+            won = XO[i];
+        }
+    } while (!victory && ++i < sizeof(XO) / sizeof(XO[0]));
+    return victory;
+}
+
+void inputString(string &s) {
+    static int numberString = 0;
+    cout << "input " << ++numberString << " string\n";
+    std::getline(cin, s);
+    if (cin.fail()) {
+        cin.clear();
+        cin.ignore(32767, '\n');
     }
 }
 
-    void inputString(string &s) {
-        static int numberString = 0;
-        cout << "input " << ++numberString << " string\n";
-        std::getline(cin, s);
-        if (cin.fail()) {
-            cin.clear();
-            cin.ignore(32767, '\n');
-        }
-    }
-
-    bool isCorrectInputUser(char table[sizeOfTable][sizeOfTable]) {
-        for (int i = 0; i < sizeOfTable; ++i) {
-            for (int j = 0; j < sizeOfTable; ++j) {
-                if (table[i][j] != 'X' && table[i][j] != 'O' && table[i][j] != '.') {
-                    return false;
-                }
+bool isCorrectInputUser(char table[sizeOfTable][sizeOfTable]) {
+    for (int i = 0; i < sizeOfTable; ++i) {
+        for (int j = 0; j < sizeOfTable; ++j) {
+            if (table[i][j] != 'X' && table[i][j] != 'O' && table[i][j] != '.') {
+                return false;
             }
         }
-        /* for (int i = 0; i < size; ++i) {
-             for (int j = 0; j < size; ++j) {
-                 if (table[i][j] != 'X' && table[i][j] != 'O' && table[i][j] != '.') {
-                     correct = false;
-                     break;
-                 } else if (table[i][j] == '.')
-                     ++countDots;
-                 else if (table[i][j] == 'O')
-                     ++countO;
-                 else if (table[i][j] == 'X')
-                     ++countX;
-             }
-           //  if (countX >= size || countO >= size) //&& victory)
-             //    correct = false;
-         }
-         */
-        return true;
     }
+    return true;
+}
 
-    Status isCorrectCondition(char table[sizeOfTable][sizeOfTable], const char c) {
-        int countO = 0, countX = 0;
-        bool correctCondition = true;
+Status isCorrectCondition(char table[sizeOfTable][sizeOfTable], char &w) {
+    int countO = 0, countX = 0, countDot = 0;
 
-        for (int i = 0; i < sizeOfTable; ++i) {
-            for (int j = 0; j < sizeOfTable; ++j) {
-                if (table[i][j] == 'O')
-                    ++countO;
-                if (table[i][j] == 'X')
-                    ++countX;
-            }
+    for (int i = 0; i < sizeOfTable; ++i) {
+        for (int j = 0; j < sizeOfTable; ++j) {
+            if (table[i][j] == 'O')
+                ++countO;
+            if (table[i][j] == 'X')
+                ++countX;
+            if (table[i][j] == '.')
+                ++countDot;
         }
-
-        if (countX <= 2 && countO <= 2)
-            return Status::NOBODY;
-        if (countO > countX || countX > countO)
-            return Status::INCORRECT;
-        if ((countO >= countX || countX >= countO) && victory)
-            return Status::INCORRECT;
     }
+
+    if (countX <= 2 && countO <= 2 && countDot > 4)
+        return Status::NOBODY;
+    if ((w == 'X' && countO >= 3) || (w == 'O' && countX >= 3))
+        return Status::INCORRECT;
+    if (w == 'X' && countX == 3) {
+        if (countO < 3)
+            return Status::PETYA;
+    }
+    if (w == 'O' && countO == 3) {
+        if (countX < 3)
+            return Status::VANYA;
+    }
+    if (countO >= countX || countX >= countO)
+        return Status::INCORRECT;
+}

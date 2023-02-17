@@ -6,18 +6,18 @@ using std::cout;
 using std::string;
 
 enum class Status {
-    INCORRECT, NOBODY, VANYA, PETYA, UNKNOWN
+    INCORRECT, NOBODY, VANYA, PETYA
 };
 bool victory = false;
 constexpr int sizeOfTable = 3;
 
-void inputString(string &s);
+void inputString(string &);
 
-Status searchWinner(char table[sizeOfTable][sizeOfTable], const char c, int i, bool);
+bool searchWinner(char table[sizeOfTable][sizeOfTable], char &);
 
 bool isCorrectInputUser(char table[sizeOfTable][sizeOfTable]);
 
 //bool foundWinner(int &countX, int &countO, Status &status);
-Status isCorrectCondition(char table[sizeOfTable][sizeOfTable], const char c);
+Status isCorrectCondition(char table[sizeOfTable][sizeOfTable], char &);
 //bool sumSymbolsXO(char table[sizeOfTable][sizeOfTable], int &countX, int &countO);
 #endif
