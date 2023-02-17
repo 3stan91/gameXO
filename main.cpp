@@ -3,10 +3,10 @@
 #include "gameXO_Head.h"
 
 int main() {
-    string s[3] {};
+   string s[3] {};
 
     for (int i = 0; i < sizeOfTable; ++i)
-          inputString(s[i]);
+        inputString(s[i]);
 
     char table[sizeOfTable][sizeOfTable];
 
