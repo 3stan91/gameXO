@@ -112,6 +112,10 @@ void inputString(string &s) {
         cin.clear();
         cin.ignore(32767, '\n');
     }
+    if(s.length()!=3) {
+        cout << "Error! The length of string must be 3 symbols\n";
+        exit(-1);
+    }
 }
 
 bool isCorrectInputUser(char table[sizeOfTable][sizeOfTable]) {
