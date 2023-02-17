@@ -3,7 +3,6 @@
 #include "gameXO_Head.h"
 
 int main() {
-
     string s[3];
     for (int i = 0; i < sizeOfTable; ++i)
         inputString(s[i]);
@@ -34,19 +33,14 @@ int main() {
                     detectedWinner = true;
                     break;
                 case Status::PETYA:
-                    // if (isCorrectCondition(table, 'O')) {
                     cout << "Petya won\n";
                     detectedWinner = true;
                     break;
-                    //}
-                    //  else                        goto incorrect;
                 case Status::VANYA:
                     // if (isCorrectCondition(table, 'X')) {
                     cout << "Vanya won\n";
                     detectedWinner = true;
                     break;
-                    // }
-                    //  else                        goto incorrect;
             }
         } else {
             cout << "Nobody\n";
