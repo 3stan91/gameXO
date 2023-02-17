@@ -3,9 +3,10 @@
 #include "gameXO_Head.h"
 
 int main() {
-    string s[3];
+    string s[3] {};
+
     for (int i = 0; i < sizeOfTable; ++i)
-        inputString(s[i]);
+          inputString(s[i]);
 
     char table[sizeOfTable][sizeOfTable];
 
@@ -37,7 +38,6 @@ int main() {
                     detectedWinner = true;
                     break;
                 case Status::VANYA:
-                    // if (isCorrectCondition(table, 'X')) {
                     cout << "Vanya won\n";
                     detectedWinner = true;
                     break;
@@ -117,9 +117,8 @@ void inputString(string &s) {
 bool isCorrectInputUser(char table[sizeOfTable][sizeOfTable]) {
     for (int i = 0; i < sizeOfTable; ++i) {
         for (int j = 0; j < sizeOfTable; ++j) {
-            if (table[i][j] != 'X' && table[i][j] != 'O' && table[i][j] != '.') {
+            if (table[i][j] != 'X' && table[i][j] != 'O' && table[i][j] != '.')
                 return false;
-            }
         }
     }
     return true;
